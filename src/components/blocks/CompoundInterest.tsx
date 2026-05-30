@@ -282,22 +282,19 @@ export const CompoundInterest: React.FC<CompoundInterestProps> = ({
               <div className="flex flex-col items-center gap-1.5">
                 <svg className="w-48 h-28 border border-emerald-950 bg-[#020805]/65 rounded-xl" viewBox="0 0 220 110">
                   <motion.path
-                    key={`area-${timeYears}-${principal}-${rate}`}
                     d={chartPaths.areaPath}
                     className="fill-[#d4af37]/10 stroke-none"
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    animate={{ d: chartPaths.areaPath, opacity: 1 }}
+                    transition={{ type: "spring", bounce: 0, duration: 0.4 }}
                   />
                   <motion.path
-                    key={`line-${timeYears}-${principal}-${rate}`}
                     d={chartPaths.linePath}
                     className="stroke-[#d4af37] fill-none"
                     strokeWidth="2.5"
                     strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    animate={{ d: chartPaths.linePath }}
+                    transition={{ type: "spring", bounce: 0, duration: 0.4 }}
                   />
                 </svg>
                 <div className="flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase">

@@ -164,6 +164,9 @@ export const QuizMcqBlock: React.FC<QuizMcqBlockProps> = ({
             return (
               <div key={idx} className="flex flex-col gap-1.5 w-full">
                 <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: idx * 0.08 }}
                   whileHover={quizState.isSubmitted ? {} : { scale: 1.015, x: 2 }}
                   whileTap={quizState.isSubmitted ? {} : { scale: 0.985 }}
                   onClick={() => handleOptionSelect(idx)}
