@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
+  font-family: var(--font-sans);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #020805; /* Deep obsidian forest green */
+  color: #f1f5f9;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom Recruiting-Grade Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(2, 8, 5, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #041208;
+  border-radius: 9999px;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #10b981, #d4af37);
+}
+
+/* Elite Glassmorphism System */
+.glass-panel {
+  background: rgba(3, 10, 6, 0.85);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.03);
+}
+
+.glass-card {
+  background: rgba(4, 15, 8, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(8, 25, 14, 0.65);
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(212, 175, 55, 0.1);
+  transform: translateY(-3px) scale(1.015);
+}
+
+/* Selected block with pulsing gold & emerald border & backglow */
+.glow-border-selected {
+  position: relative;
+  border: 2px solid transparent !important;
+  background-image: linear-gradient(#030a06, #030a06), linear-gradient(135deg, #d4af37, #10b981, #f59e0b);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  animation: glow-pulse 3s infinite alternate;
+}
+
+.glow-border-selected::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #d4af37, #10b981, #f59e0b);
+  border-radius: inherit;
+  z-index: -1;
+  filter: blur(14px);
+  opacity: 0.35;
+  pointer-events: none;
+  animation: blur-pulse 3s infinite alternate;
+}
+
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.12), 0 0 20px rgba(16, 185, 129, 0.08);
+  }
+  100% {
+    box-shadow: 0 20px 55px rgba(245, 158, 11, 0.22), 0 0 25px rgba(212, 175, 55, 0.14);
+  }
+}
+
+@keyframes blur-pulse {
+  0% {
+    opacity: 0.25;
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 0.45;
+    filter: blur(16px);
+  }
+}
+
+/* Glowing Form Fields */
+input[type="number"], select, textarea, input[type="text"] {
+  background: rgba(3, 10, 6, 0.75) !important;
+  border: 1px solid rgba(212, 175, 55, 0.18) !important;
+  border-radius: 12px;
+  color: #f8fafc;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none !important;
+}
+
+input[type="number"]:focus, select:focus, textarea:focus, input[type="text"]:focus {
+  border-color: rgba(212, 175, 55, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15), 0 0 15px rgba(212, 175, 55, 0.2);
+  background: rgba(4, 15, 8, 0.9) !important;
+}
+
+/* Custom High-Tech Range Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(3, 10, 6, 0.9);
+  height: 5px;
+  border-radius: 9999px;
+  outline: none;
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  transition: all 0.3s;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #020805;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Range Thumb Color Swatches */
+input[type="range"].accent-blue-600::-webkit-slider-thumb {
+  background: linear-gradient(135deg, #d4af37, #10b981);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+input[type="range"].accent-emerald-500::-webkit-slider-thumb {
+  background: linear-gradient(135deg, #10b981, #d4af37);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+}
+
+input[type="range"].accent-violet-500::-webkit-slider-thumb {
+  background: linear-gradient(135deg, #f59e0b, #d4af37);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.35);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.5);
+}
+
+/* TipTap Editor Customizations */
+.ProseMirror {
+  outline: none;
+  min-height: 120px;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #cbd5e1;
+}
+
+.ProseMirror p {
+  margin-bottom: 0.85rem;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 1.85rem;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #ffffff, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ProseMirror h1 { font-size: 2.1rem; }
+.ProseMirror h2 { font-size: 1.7rem; }
+.ProseMirror h3 { font-size: 1.35rem; }
+.ProseMirror h4 { font-size: 1.15rem; }
+
+.ProseMirror blockquote {
+  border-left: 4px solid #d4af37;
+  background: rgba(212, 175, 55, 0.03);
+  padding: 0.75rem 1.25rem;
+  font-style: italic;
+  color: #cbd5e1;
+  border-radius: 0 12px 12px 0;
+  margin: 1.25rem 0;
+}
+
+.ProseMirror code {
+  background: rgba(2, 8, 5, 0.8);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  color: #e5c158;
+}
+
+/* Premium Device Simulator Mockup Framework */
+.mock-device-bezel {
+  background: #020805;
+  border: 12px solid #0d1f14;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.95), inset 0 2px 5px rgba(212, 175, 55, 0.05);
+}
+
+.device-camera-notch {
+  width: 120px;
+  height: 22px;
+  background: #0d1f14;
+  border-radius: 0 0 16px 16px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+}
