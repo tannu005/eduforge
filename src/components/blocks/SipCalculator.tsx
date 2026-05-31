@@ -211,8 +211,8 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
         </div>
 
         {/* RESULTS COLUMN */}
-        <div className="lg:col-span-6 flex flex-col sm:flex-row gap-5 items-center justify-center p-4 rounded-2xl bg-[#041208]/30 border border-emerald-950">
-          <div className="flex flex-col gap-4 w-full sm:w-1/2">
+        <div className="lg:col-span-6 flex flex-col xl:flex-row gap-5 items-center justify-center p-4 rounded-2xl bg-[#041208]/30 border border-emerald-950">
+          <div className="flex flex-col gap-4 w-full xl:w-1/2">
             <div className="flex flex-col select-text">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none">
                 Expected Future Value
@@ -242,7 +242,7 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
           </div>
 
           {/* Chart.js Doughnut chart */}
-          <div className="w-full sm:w-1/2 flex items-center justify-center relative select-none">
+          <div className="w-full xl:w-1/2 flex items-center justify-center relative select-none">
             <div className="w-36 h-36 relative">
               <Doughnut
                 data={{

@@ -246,8 +246,8 @@ export const CompoundInterest: React.FC<CompoundInterestProps> = ({
         </div>
 
         {/* RESULTS COLUMN */}
-        <div className="lg:col-span-6 flex flex-col sm:flex-row gap-5 items-center justify-center p-4 rounded-2xl bg-[#041208]/30 border border-emerald-950">
-          <div className="flex flex-col gap-4 w-full sm:w-1/2">
+        <div className="lg:col-span-6 flex flex-col xl:flex-row gap-5 items-center justify-center p-4 rounded-2xl bg-[#041208]/30 border border-emerald-950">
+          <div className="flex flex-col gap-4 w-full xl:w-1/2">
             <div className="flex flex-col select-text">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none">
                 Maturity Future Value
@@ -277,7 +277,7 @@ export const CompoundInterest: React.FC<CompoundInterestProps> = ({
           </div>
 
           {/* SVG Line Graph showing compound growth curve */}
-          <div className="w-full sm:w-1/2 flex flex-col items-center justify-center relative select-none">
+          <div className="w-full xl:w-1/2 flex flex-col items-center justify-center relative select-none">
             {chartPaths ? (
               <div className="flex flex-col items-center gap-1.5">
                 <svg className="w-48 h-28 border border-emerald-950 bg-[#020805]/65 rounded-xl" viewBox="0 0 220 110">

@@ -41,7 +41,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
   return (
     <div 
-      className="absolute -top-10 left-2 z-30 flex flex-wrap items-center gap-1 sm:gap-1.5 px-2 py-1 border border-emerald-950 bg-[#041208]/90 shadow-xl rounded-lg select-none backdrop-blur-md max-w-[calc(100vw-2rem)]"
+      className="flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 border border-emerald-950 bg-[#041208]/95 shadow-xl rounded-xl select-none backdrop-blur-md whitespace-nowrap"
       role="toolbar"
       aria-label="Block editing actions"
       onClick={(e) => e.stopPropagation()}

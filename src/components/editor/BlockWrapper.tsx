@@ -161,7 +161,7 @@ export const BlockWrapper: React.FC<BlockWrapperProps> = ({ block, children }) =
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="absolute left-1/2 -translate-x-1/2 -top-6 z-30 pointer-events-auto"
+            className="absolute left-1/2 -translate-x-1/2 -top-12 z-30 pointer-events-auto"
           >
             <FloatingToolbar
               block={block}
