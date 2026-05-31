@@ -47,15 +47,15 @@ export const DividerBlock: React.FC<DividerBlockProps> = ({
 
   return (
     <div className={`flex flex-col gap-3 p-4 border border-[#082212]/80 bg-[#030a06]/30 rounded-xl select-none ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4">
-        <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+        <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider whitespace-nowrap flex-shrink-0">
           Divider Line Settings
         </span>
         
         {!isLocked && (
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Style Selector */}
-            <div className="flex items-center gap-1.5 bg-[#030e07] border border-emerald-950/50 p-0.5 rounded-lg">
+            <div className="flex flex-wrap items-center gap-1 bg-[#030e07] border border-emerald-950/50 p-0.5 rounded-lg">
               {(['solid', 'dashed', 'dotted', 'decorative'] as const).map((style) => (
                 <button
                   key={style}
@@ -72,7 +72,7 @@ export const DividerBlock: React.FC<DividerBlockProps> = ({
             </div>
 
             {/* Spacing Selector */}
-            <div className="flex items-center gap-1.5 bg-[#030e07] border border-emerald-950/50 p-0.5 rounded-lg">
+            <div className="flex flex-wrap items-center gap-1 bg-[#030e07] border border-emerald-950/50 p-0.5 rounded-lg">
               {(['compact', 'normal', 'spacious'] as const).map((spacing) => (
                 <button
                   key={spacing}

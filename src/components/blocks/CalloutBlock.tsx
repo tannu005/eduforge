@@ -40,8 +40,8 @@ export const CalloutBlock: React.FC<CalloutBlockProps> = ({
 
   return (
     <div className={`flex flex-col gap-3.5 p-4 border rounded-xl transition-all ${currentType.color} ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 whitespace-nowrap">
           <IconComponent className="h-5 w-5 flex-shrink-0" />
           <span className="text-xs font-bold uppercase tracking-wider select-none opacity-85">
             {content.type} Callout
@@ -50,7 +50,7 @@ export const CalloutBlock: React.FC<CalloutBlockProps> = ({
         
         {/* Callout type toggle selector */}
         {!isLocked && (
-          <div className="flex items-center gap-1 bg-[#010603]/60 p-0.5 border border-emerald-950 rounded-lg select-none">
+          <div className="flex flex-wrap items-center gap-1 bg-[#010603]/60 p-0.5 border border-emerald-950 rounded-lg select-none">
             {types.map((t) => {
               const TIcon = t.icon;
               return (

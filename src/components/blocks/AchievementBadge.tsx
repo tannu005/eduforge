@@ -6,6 +6,7 @@ import { Award, Check, Lock, Unlock, ShieldAlert } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
+import { Modal } from '../shared/Modal';
 
 interface AchievementBadgeProps {
   id: string;
@@ -31,6 +32,8 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
   // Student preview unlock state
   const { unlockedBadgeIds, unlockBadge } = useQuizStore();
   const isUnlocked = isPreview ? unlockedBadgeIds.includes(id) : content.isUnlocked;
+
+  const [showCelebrateModal, setShowCelebrateModal] = useState(false);
 
   const triggerConfetti = () => {
     // Elegant gold & mint emerald confetti spray (A5.1 Badge unlock confetti celebration)
@@ -64,12 +67,14 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
       if (!isUnlocked) {
         unlockBadge(id);
         triggerConfetti();
+        setShowCelebrateModal(true);
       }
     } else {
       const nextUnlockedState = !content.isUnlocked;
       updateBlockContent(id, { isUnlocked: nextUnlockedState });
       if (nextUnlockedState) {
         triggerConfetti();
+        setShowCelebrateModal(true);
       }
     }
   };
@@ -82,7 +87,8 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
 
   if (isPreview) {
     return (
-      <motion.div 
+      <>
+        <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 120, damping: 18 }}
@@ -151,12 +157,50 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
           </motion.button>
         )}
       </motion.div>
-    );
-  }
+
+      <Modal
+        isOpen={showCelebrateModal}
+        onClose={() => setShowCelebrateModal(false)}
+        title="🏆 Achievement Unlocked!"
+        footer={
+          <button
+            onClick={() => setShowCelebrateModal(false)}
+            className="px-4 py-2 bg-[#d4af37] hover:bg-[#e5c158] text-black font-extrabold text-xs rounded-xl shadow-lg transition-all cursor-pointer focus:outline-none"
+          >
+            Awesome!
+          </button>
+        }
+      >
+        <div className="flex flex-col items-center text-center gap-4 py-3 select-text animate-[fadeIn_0.2s_ease-out]">
+          <motion.div 
+            animate={{ scale: [1, 1.3, 0.9, 1.1, 1], rotate: [0, 15, -15, 10, 0] }}
+            transition={{ type: "spring", stiffness: 140, damping: 10 }}
+            className="p-5 bg-[#d4af37]/20 border border-[#d4af37]/30 text-[#d4af37] rounded-3xl shadow-[0_0_30px_rgba(212,175,55,0.25)] flex items-center justify-center"
+          >
+            {renderIcon(content.icon || 'Award', "h-14 w-14")}
+          </motion.div>
+          <div className="flex flex-col gap-1.5">
+            <h3 className="text-lg font-extrabold font-display text-white">
+              {content.title}
+            </h3>
+            <p className="text-xs text-slate-350 leading-relaxed font-semibold px-4">
+              {content.description}
+            </p>
+          </div>
+          <div className="px-3 py-1 bg-emerald-950/30 border border-emerald-900/30 rounded-xl mt-2 select-none">
+            <span className="text-[10px] text-emerald-400 font-bold font-mono uppercase tracking-wider">
+              Unlocked via: {content.unlockCondition}
+            </span>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}
 
   return (
     <div className={`flex flex-col gap-4 p-4 border border-[#082212]/80 bg-[#030a06]/30 rounded-xl select-none ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4 border-b border-[#04140a] pb-2.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#04140a] pb-2.5">
         <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
           <Award className="h-4 w-4 text-[#d4af37]" />
           <span>Achievement Badge Settings</span>

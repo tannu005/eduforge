@@ -119,7 +119,7 @@ export const LivePreviewPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full w-full select-none print:bg-white print:text-black">
       {/* PREVIEW CONTAINER HEADER BAR */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-900 bg-slate-950/80 flex-shrink-0 select-none print:hidden">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 border-b border-slate-900 bg-slate-950/80 flex-shrink-0 select-none print:hidden">
         {/* Device breakpoint buttons */}
         <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 p-0.5 rounded-xl" role="radiogroup" aria-label="Preview Breakpoint Device">
           {devicesList.map((d) => {
@@ -144,7 +144,7 @@ export const LivePreviewPanel: React.FC = () => {
         </div>
 
         {/* Action icons */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             onClick={() => setIsPreviewDark(!isPreviewDark)}
             className="p-1.5 rounded-lg text-slate-500 hover:text-slate-350 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-all cursor-pointer focus:outline-none"
@@ -197,7 +197,11 @@ export const LivePreviewPanel: React.FC = () => {
               <h2 className={`text-xl font-extrabold font-display leading-tight ${
                 isPreviewDark ? 'text-white' : 'text-slate-900'
               } print:text-black`}>
-                {title || 'Untitled Financial Literacy Guide'}
+                {(title || 'Untitled Financial Literacy Guide').split(' ').map((word, idx) => (
+                  <span key={idx} className="text-reveal-word mr-1.5 inline-block">
+                    {word}
+                  </span>
+                ))}
               </h2>
               <p className={`text-xs mt-1.5 leading-relaxed font-medium ${
                 isPreviewDark ? 'text-slate-500' : 'text-slate-500'
@@ -218,7 +222,7 @@ export const LivePreviewPanel: React.FC = () => {
 
             {/* Scorecard completion panel */}
             {scoreQuizzes.length > 0 && (
-              <div className={`p-4 border rounded-xl flex items-center justify-between select-text print:hidden ${
+              <div className={`p-3 sm:p-4 border rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 select-text print:hidden ${
                 isModuleCompleted 
                   ? (isPassed ? 'border-emerald-500/20 bg-emerald-950/15' : 'border-rose-500/20 bg-rose-950/15')
                   : 'border-emerald-950/30 bg-[#041208]/30'

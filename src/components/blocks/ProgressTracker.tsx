@@ -55,59 +55,70 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
   };
 
   if (isPreview) {
+    const progressPercent = content.steps.length > 1 
+      ? ((activeStep) / (content.steps.length - 1)) * 100 
+      : 0;
+
     return (
       <div 
-        className="flex flex-col gap-4 p-5 border border-emerald-950/80 bg-[#041208]/20 rounded-2xl shadow-xl w-full select-text"
+        className="flex flex-col gap-4 p-5 border border-emerald-950/80 bg-[#041208]/20 rounded-2xl shadow-xl w-full select-text glass-deep"
         role="progressbar"
         aria-valuenow={activeStep + 1}
         aria-valuemin={1}
         aria-valuemax={content.steps.length}
       >
-        <div className="flex items-center justify-between border-b border-emerald-950 pb-2 select-none">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-2 select-none">
           <div className="flex items-center gap-2 text-slate-400">
             <Milestone className="h-4 w-4 text-[#d4af37]" />
             <span className="text-xs font-bold uppercase tracking-wider">
               Step {activeStep + 1} of {content.steps.length}: {content.steps[activeStep]?.label}
             </span>
           </div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase">
-            {content.isBranching ? 'Branching' : 'Sequential'}
+          <span className="text-[10px] font-bold text-[#d4af37] font-mono">
+            {progressPercent.toFixed(0)}%
           </span>
         </div>
 
-        {/* Visual Progress Nodes */}
-        <div className="flex items-center justify-between w-full relative py-4 select-none">
-          {/* Horizontal Connector Line */}
-          <div className="absolute top-[35px] left-4 right-4 h-1 bg-[#030a06] rounded z-0" />
+        {/* Animated Striped Progress Bar */}
+        <div className="progress-bar-container">
           <div 
-            className="absolute top-[35px] left-4 h-1 bg-[#d4af37] rounded transition-all duration-300 z-0" 
-            style={{ width: `${(activeStep / (content.steps.length - 1)) * 92}%` }}
+            className="progress-bar-fill"
+            style={{ width: `${Math.max(4, progressPercent)}%` }}
           />
+        </div>
 
+        {/* Step Milestone Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 select-none">
           {content.steps.map((step, idx) => {
             const isCompleted = idx < activeStep;
             const isActive = idx === activeStep;
             const isSelectable = content.isBranching || idx <= activeStep + 1;
-
-            let circleClass = "w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:ring-offset-2 ";
-            
-            if (isActive) {
-              circleClass += "bg-[#d4af37] border-[#e5c158] text-black scale-110 shadow-lg shadow-emerald-500/20";
-            } else if (isCompleted) {
-              circleClass += "bg-[#030a06] border-emerald-800 text-emerald-400";
-            } else {
-              circleClass += "bg-[#020805] border-emerald-950 text-slate-650";
-            }
 
             return (
               <button
                 key={idx}
                 onClick={() => handleStepClick(idx)}
                 disabled={!isSelectable}
-                className={`${circleClass} ${isSelectable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-                title={step.label}
+                className={`p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-[#d4af37] ${
+                  isActive
+                    ? 'border-[#d4af37]/40 bg-[#d4af37]/10 shadow-lg shadow-[#d4af37]/5'
+                    : isCompleted
+                    ? 'border-emerald-800/30 bg-emerald-950/20'
+                    : 'border-emerald-950/20 bg-[#020805]/30 opacity-50'
+                }`}
               >
-                {idx + 1}
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] font-extrabold font-mono ${
+                    isActive ? 'text-[#d4af37]' : isCompleted ? 'text-emerald-500' : 'text-slate-600'
+                  }`}>
+                    S{idx + 1}
+                  </span>
+                  <span className={`text-[10px] font-bold truncate ${
+                    isActive ? 'text-white' : isCompleted ? 'text-slate-300' : 'text-slate-500'
+                  }`}>
+                    {step.label}
+                  </span>
+                </div>
               </button>
             );
           })}
@@ -128,7 +139,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 
   return (
     <div className={`flex flex-col gap-4 p-4 border border-emerald-950 bg-[#041208]/25 rounded-xl select-none ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4 border-b border-emerald-950 pb-2.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-2.5">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
           <Milestone className="h-4 w-4 text-[#d4af37]" />
           <span>Progress Tracker Settings</span>

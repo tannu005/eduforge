@@ -130,7 +130,7 @@ export const VideoBlock: React.FC<VideoBlockProps> = ({
 
   return (
     <div className={`flex flex-col gap-4 p-4 border border-[#082212]/80 bg-[#030a06]/30 rounded-xl select-none ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
           <Video className="h-4 w-4 text-[#d4af37]" />
           <span>Video Embed Settings</span>

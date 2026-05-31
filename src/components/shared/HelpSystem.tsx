@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { HelpCircle, X, Keyboard, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface HelpSystemProps {
@@ -75,10 +76,10 @@ export const HelpSystem: React.FC<HelpSystemProps> = () => {
       </button>
 
       {/* Main Modal Dialog */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      {isOpen && createPortal(
+        <div className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div 
-            className="w-full max-w-lg bg-[#020805] border border-emerald-950 shadow-2xl rounded-2xl overflow-hidden flex flex-col max-h-[500px]"
+            className="w-full max-w-lg bg-[#020805] border border-emerald-950 shadow-2xl rounded-2xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[550px]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="help-modal-title"
@@ -116,7 +117,7 @@ export const HelpSystem: React.FC<HelpSystemProps> = () => {
                 
                 <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto pr-1">
                   {keyboardShortcuts.map((shortcut) => (
-                    <div key={shortcut.keys} className="flex justify-between items-center gap-4 text-xs">
+                    <div key={shortcut.keys} className="flex flex-wrap sm:flex-nowrap justify-between items-start sm:items-center gap-2.5 text-xs py-1 border-b border-emerald-950/10">
                       <span className="text-slate-400 font-medium leading-relaxed">
                         {shortcut.desc}
                       </span>
@@ -135,12 +136,15 @@ export const HelpSystem: React.FC<HelpSystemProps> = () => {
               <span>EduForge Technologies</span>
             </div>
           </div>
-        </div>
-      )}      {/* Guided Tooltip Tour Popups Overlay */}
-      {showTour && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+        </div>,
+        document.body
+      )}
+
+      {/* Guided Tooltip Tour Popups Overlay */}
+      {showTour && createPortal(
+        <div className="fixed inset-0 z-[110] bg-black/40 flex items-center justify-center p-4">
           <div 
-            className="w-full max-w-sm bg-[#020805] border border-[#d4af37]/35 shadow-2xl rounded-2xl overflow-hidden p-5 flex flex-col gap-4 relative"
+            className="w-full max-w-sm bg-[#020805] border border-[#d4af37]/35 shadow-2xl rounded-2xl overflow-hidden p-5 flex flex-col gap-4 relative animate-[fadeIn_0.2s_ease-out]"
             role="dialog"
             aria-modal="true"
           >
@@ -178,7 +182,7 @@ export const HelpSystem: React.FC<HelpSystemProps> = () => {
                 {tourStep > 0 && (
                   <button
                     onClick={handlePrevStep}
-                    className="p-1 text-slate-500 hover:text-slate-300 bg-slate-900 border border-slate-800 rounded-lg cursor-pointer"
+                    className="p-1 text-slate-500 hover:text-slate-350 bg-slate-900 border border-slate-800 rounded-lg cursor-pointer"
                     aria-label="Previous step"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
@@ -194,7 +198,8 @@ export const HelpSystem: React.FC<HelpSystemProps> = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

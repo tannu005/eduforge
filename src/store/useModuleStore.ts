@@ -43,6 +43,12 @@ interface ModuleStoreState {
   reorderBlocks: (blocks: Block[]) => void;
   setSelectedBlockId: (id: string | null) => void;
 
+  // Authentication State (smart feature limiting)
+  isAuthenticated: boolean;
+  setIsAuthenticated: (auth: boolean) => void;
+  showLoginModal: boolean;
+  setShowLoginModal: (show: boolean) => void;
+
   // History operations
   saveToHistory: () => void;
   undo: () => void;
@@ -148,6 +154,12 @@ export const useModuleStore = create<ModuleStoreState>((set, get) => {
     selectedBlockId: null,
     past: [],
     future: [],
+
+    isAuthenticated: false,
+    setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
+
+    showLoginModal: false,
+    setShowLoginModal: (show) => set({ showLoginModal: show }),
 
     saveToHistory: () => {
       const snapshot = getSnapshot();

@@ -7,6 +7,7 @@ import * as Icons from 'lucide-react';
 
 export const BlockPalette: React.FC = () => {
   const addBlock = useModuleStore((state) => state.addBlock);
+  const isAuthenticated = useModuleStore((state) => state.isAuthenticated);
   const { showToast } = useToastStore();
   const [search, setSearch] = useState('');
 
@@ -21,6 +22,12 @@ export const BlockPalette: React.FC = () => {
   const categories = ['content', 'interactive', 'utility', 'gamification'] as const;
 
   const handleBlockAdd = (type: BlockType) => {
+    const category = BLOCK_REGISTRY[type].category;
+    if (!isAuthenticated && (category === 'interactive' || category === 'gamification')) {
+      useModuleStore.getState().setShowLoginModal(true);
+      showToast(`🔒 Secure Hub Connection Required. Connect via Security Hub to unlock ${BLOCK_REGISTRY[type].name} simulations!`, 'warning', 4500);
+      return;
+    }
     addBlock(type);
     showToast(`Added new ${BLOCK_REGISTRY[type].name} block.`, 'success');
   };
@@ -87,25 +94,31 @@ export const BlockPalette: React.FC = () => {
                 {category} Elements
               </span>
               <div className="grid grid-cols-1 gap-2">
-                {categoryBlocks.map((block) => (
-                  <button
-                    key={block.type}
-                    onClick={() => handleBlockAdd(block.type)}
-                    className="w-full text-left p-3 rounded-2xl border border-emerald-950/20 bg-[#041208]/30 hover:bg-[#082210]/40 flex gap-3 transition-all duration-300 transform hover:-translate-y-0.5 hover:border-emerald-800/50 hover:shadow-lg hover:shadow-emerald-500/5 select-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#d4af37]"
-                  >
-                    <div className="mt-0.5 p-2 rounded-xl bg-[#020805] border border-emerald-950/40 flex items-center justify-center flex-shrink-0 transition-transform duration-300">
-                      {renderIcon(block.icon, block.category)}
-                    </div>
-                    <div className="flex flex-col overflow-hidden">
-                      <span className="text-xs font-bold text-slate-200 tracking-tight leading-snug">
-                        {block.name}
-                      </span>
-                      <span className="text-[10px] text-emerald-300/40 font-semibold leading-normal mt-1 line-clamp-2">
-                        {block.description}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                {categoryBlocks.map((block) => {
+                  const isRestricted = !isAuthenticated && (block.category === 'interactive' || block.category === 'gamification');
+                  return (
+                    <button
+                      key={block.type}
+                      onClick={() => handleBlockAdd(block.type)}
+                      className={`palette-card w-full text-left p-3 rounded-2xl border border-emerald-950/20 bg-[#041208]/30 hover:bg-[#082210]/40 flex gap-3 select-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#d4af37] group/card ${
+                        isRestricted ? 'opacity-60 border-amber-500/10 hover:border-amber-500/20' : ''
+                      }`}
+                    >
+                      <div className="mt-0.5 p-2 rounded-xl bg-[#020805] border border-[#082212] flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover/card:scale-110 group-hover/card:shadow-lg group-hover/card:shadow-[#d4af37]/10">
+                        {renderIcon(block.icon, block.category)}
+                      </div>
+                      <div className="flex flex-col overflow-hidden w-full">
+                        <span className="text-xs font-bold text-slate-200 tracking-tight leading-snug flex items-center justify-between w-full">
+                          <span>{block.name}</span>
+                          {isRestricted && <Icons.Lock className="h-3 w-3 text-[#d4af37]/85 flex-shrink-0" />}
+                        </span>
+                        <span className="text-[10px] text-emerald-300/40 font-semibold leading-normal mt-1 line-clamp-2">
+                          {block.description}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           );

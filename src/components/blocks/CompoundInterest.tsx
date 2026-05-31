@@ -113,7 +113,7 @@ export const CompoundInterest: React.FC<CompoundInterestProps> = ({
       role="region"
       aria-label="Compound Interest Widget"
     >
-      <div className="flex items-center justify-between border-b border-emerald-950 pb-3 select-none">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-3 select-none">
         <div className="flex items-center gap-2.5 text-slate-300">
           <Percent className="h-5 w-5 text-[#d4af37]" />
           <h3 className="font-bold text-base font-display">
@@ -141,7 +141,7 @@ export const CompoundInterest: React.FC<CompoundInterestProps> = ({
         <div className="lg:col-span-6 flex flex-col gap-5">
           {/* principal */}
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center select-none">
+            <div className="flex flex-wrap justify-between items-center gap-2 select-none">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Initial Principal (Lump Sum)
               </label>
@@ -176,7 +176,7 @@ export const CompoundInterest: React.FC<CompoundInterestProps> = ({
 
           {/* rate */}
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center select-none">
+            <div className="flex flex-wrap justify-between items-center gap-2 select-none">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Interest Rate (Annual)
               </label>
@@ -212,7 +212,7 @@ export const CompoundInterest: React.FC<CompoundInterestProps> = ({
 
           {/* time */}
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center select-none">
+            <div className="flex flex-wrap justify-between items-center gap-2 select-none">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Time Duration (Years)
               </label>

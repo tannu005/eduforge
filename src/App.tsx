@@ -6,19 +6,29 @@ import { BlockPalette } from './components/editor/BlockPalette';
 import { LivePreviewPanel } from './components/preview/LivePreviewPanel';
 import { HelpSystem } from './components/shared/HelpSystem';
 import { ToastContainer } from './components/shared/Toast';
+import { CustomCursor } from './components/shared/CustomCursor';
+import { Modal } from './components/shared/Modal';
+import { Tooltip } from './components/shared/Tooltip';
+import { LoginHub } from './components/shared/LoginHub';
 import { exportModuleToJSON, importModuleFromJSON } from './utils/serialization';
 import { validateModuleJSON, ValidationError } from './utils/validation';
-import { motion } from 'framer-motion';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from './lib/firebase';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Undo2, Redo2, Download, Upload, AlertCircle, 
-  Sparkles, CheckCircle2, ChevronRight, Hammer, HelpCircle, X
+  Sparkles, CheckCircle2, ChevronRight, Hammer, HelpCircle, X,
+  Sun, Moon, ChevronDown, BookOpen, Calculator, Trophy,
+  LayoutGrid, Menu, XCircle
 } from 'lucide-react';
 
 export default function App() {
   const { 
     past, future, undo, redo, title, description,
     version, createdAt, author, metadata, blocks,
-    quizConfig, setModule, clearHistory
+    quizConfig, setModule, clearHistory,
+    isAuthenticated, setIsAuthenticated,
+    showLoginModal, setShowLoginModal
   } = useModuleStore();
 
   const { showToast } = useToastStore();
@@ -27,7 +37,42 @@ export default function App() {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Theme toggle state
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
+
+  // Navbar dropdown state
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Listen to Firebase Auth state
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+    });
+    return () => unsubscribe();
+  }, [setIsAuthenticated]);
+
+  const toggleTheme = () => {
+    setIsDarkTheme(!isDarkTheme);
+    if (isDarkTheme) {
+      document.documentElement.classList.add('theme-light');
+    } else {
+      document.documentElement.classList.remove('theme-light');
+    }
+    showToast(`Switched to ${isDarkTheme ? 'Light' : 'Dark'} theme`, 'info', 1500);
+  };
+
+  const handleDropdownToggle = (name: string) => {
+    setActiveDropdown(activeDropdown === name ? null : name);
+  };
+
   const handleExport = () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      showToast('🔒 Please authenticate to export your module.', 'warning');
+      return;
+    }
+
     const rawModule = {
       moduleId: useModuleStore.getState().moduleId,
       title,
@@ -118,16 +163,52 @@ export default function App() {
     e.target.value = '';
   };
 
+  // Navbar dropdown items
+  const navDropdowns = [
+    {
+      label: 'Modules',
+      icon: BookOpen,
+      items: [
+        { label: 'Rich Text Block', desc: 'WYSIWYG formatted content' },
+        { label: 'Image Block', desc: 'Responsive images with alt-text' },
+        { label: 'Video Block', desc: 'YouTube & Vimeo embeds' },
+        { label: 'Code Snippet', desc: 'Syntax-highlighted code' },
+      ]
+    },
+    {
+      label: 'Calculators',
+      icon: Calculator,
+      items: [
+        { label: 'EMI Calculator', desc: 'Loan EMI with amortisation' },
+        { label: 'SIP Calculator', desc: 'Systematic investment plan' },
+        { label: 'Compound Interest', desc: 'Growth curve visualiser' },
+      ]
+    },
+    {
+      label: 'Gamification',
+      icon: Trophy,
+      items: [
+        { label: 'Quiz MCQ', desc: 'Multiple-choice assessment' },
+        { label: 'Quiz True/False', desc: 'Binary choice with streaks' },
+        { label: 'Achievement Badge', desc: 'Unlockable confetti badges' },
+        { label: 'Progress Tracker', desc: 'Milestone-based progress' },
+      ]
+    },
+  ];
+
   return (
-    <div className="relative flex flex-col h-screen w-screen overflow-hidden bg-[#020805] text-[#f1f5f9] font-sans print:h-auto print:overflow-visible">
+    <div className={`relative flex flex-col h-screen w-screen overflow-hidden text-[#f1f5f9] font-sans print:h-auto print:overflow-visible ${isDarkTheme ? 'bg-[#020805]' : 'bg-[#f8faf9]'}`}>
+      {/* Custom Cursor Trail */}
+      <CustomCursor />
+
       {/* Visual Glowing Ambient Orbs */}
       <div className="absolute top-[-20%] left-[-20%] w-[700px] h-[700px] rounded-full bg-emerald-750/6 blur-[160px] pointer-events-none z-0" />
       <div className="absolute bottom-[-20%] right-[-20%] w-[700px] h-[700px] rounded-full bg-amber-500/6 blur-[160px] pointer-events-none z-0" />
       <div className="absolute top-[20%] left-[30%] w-[500px] h-[500px] rounded-full bg-emerald-600/4 blur-[140px] pointer-events-none z-0" />
 
-      {/* 1. GLASS CONTROL NAVIGATION BAR */}
-      <header className="relative flex items-center justify-between px-6 py-3 border-b border-emerald-950/45 bg-[#030c06]/85 backdrop-blur-2xl shadow-xl z-40 flex-shrink-0 select-none print:hidden">
-        {/* Startup Brand Logo */}
+      {/* ═══ NAVBAR — Bootstrap-Style with Dropdowns ═══ */}
+      <nav className="relative flex items-center justify-between px-3 sm:px-6 py-2.5 border-b border-emerald-950/45 bg-[#030c06]/85 backdrop-blur-2xl shadow-xl z-40 flex-shrink-0 select-none print:hidden gap-2">
+        {/* Brand */}
         <div className="flex items-center gap-3 group">
           <div className="p-2 rounded-xl bg-gradient-to-br from-[#d4af37] via-[#10b981] to-[#e5c158] text-black flex items-center justify-center shadow-lg shadow-emerald-950/20 group-hover:shadow-[#d4af37]/30 group-hover:scale-105 transition-all duration-300">
             <Hammer className="h-5 w-5 text-black group-hover:rotate-12 transition-transform duration-300" />
@@ -145,39 +226,98 @@ export default function App() {
           </div>
         </div>
 
-        {/* Undo/Redo & Serialization buttons */}
-        <div className="flex items-center gap-5">
-          {/* History control slice */}
-          <div className="flex items-center gap-1 p-0.5 bg-[#030a05] border border-emerald-950/60 rounded-xl shadow-inner">
+        {/* Center — Dropdown Navigation Links */}
+        <div className="hidden lg:flex items-center gap-1">
+          {navDropdowns.map((dropdown) => (
+            <div key={dropdown.label} className="relative">
+              <button
+                onClick={() => handleDropdownToggle(dropdown.label)}
+                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer focus:outline-none ${
+                  activeDropdown === dropdown.label
+                    ? 'bg-[#d4af37]/15 text-[#d4af37] border border-[#d4af37]/20'
+                    : 'text-slate-400 hover:text-white hover:bg-[#06140b]/50 border border-transparent'
+                }`}
+              >
+                <dropdown.icon className="h-3.5 w-3.5" />
+                <span>{dropdown.label}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${activeDropdown === dropdown.label ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Dropdown Panel */}
+              <AnimatePresence>
+                {activeDropdown === dropdown.label && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-1.5 w-64 bg-[#030a06]/95 border border-[#082212]/60 rounded-2xl shadow-2xl shadow-black/50 backdrop-blur-2xl overflow-hidden z-50"
+                  >
+                    <div className="p-2">
+                      {dropdown.items.map((item, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setActiveDropdown(null)}
+                          className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#082212]/30 transition-colors cursor-pointer flex flex-col gap-0.5 focus:outline-none group"
+                        >
+                          <span className="text-xs font-bold text-slate-200 group-hover:text-[#d4af37] transition-colors">{item.label}</span>
+                          <span className="text-[10px] text-slate-500 font-medium">{item.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {/* Right — Actions */}
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-wrap justify-end">
+          {/* Theme Toggle */}
+          <Tooltip content={isDarkTheme ? 'Switch to Light Mode' : 'Switch to Dark Mode'} position="bottom">
             <button
-              onClick={undo}
-              disabled={past.length === 0}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#06140b] disabled:text-slate-700 disabled:hover:bg-transparent transition-all cursor-pointer disabled:cursor-not-allowed focus:outline-none"
-              title={past.length > 0 ? `Undo Last Action (${past.length} steps)` : 'Nothing to Undo (Ctrl+Z)'}
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-[#030a05] hover:bg-[#06140b] border border-emerald-950/60 text-slate-400 hover:text-[#d4af37] transition-all cursor-pointer focus:outline-none"
+              aria-label="Toggle theme"
             >
-              <Undo2 className="h-4 w-4" />
+              {isDarkTheme ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <button
-              onClick={redo}
-              disabled={future.length === 0}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#06140b] disabled:text-slate-700 disabled:hover:bg-transparent transition-all cursor-pointer disabled:cursor-not-allowed focus:outline-none"
-              title={future.length > 0 ? `Redo Next Action (${future.length} steps)` : 'Nothing to Redo (Ctrl+Shift+Z)'}
-            >
-              <Redo2 className="h-4 w-4" />
-            </button>
+          </Tooltip>
+
+          {/* History controls */}
+          <div className="hidden sm:flex items-center gap-1 p-0.5 bg-[#030a05] border border-emerald-950/60 rounded-xl shadow-inner">
+            <Tooltip content={past.length > 0 ? `Undo (${past.length} steps)` : 'Nothing to undo'} position="bottom">
+              <button
+                onClick={undo}
+                disabled={past.length === 0}
+                className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#06140b] disabled:text-slate-700 disabled:hover:bg-transparent transition-all cursor-pointer disabled:cursor-not-allowed focus:outline-none"
+              >
+                <Undo2 className="h-4 w-4" />
+              </button>
+            </Tooltip>
+            <Tooltip content={future.length > 0 ? `Redo (${future.length} steps)` : 'Nothing to redo'} position="bottom">
+              <button
+                onClick={redo}
+                disabled={future.length === 0}
+                className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#06140b] disabled:text-slate-700 disabled:hover:bg-transparent transition-all cursor-pointer disabled:cursor-not-allowed focus:outline-none"
+              >
+                <Redo2 className="h-4 w-4" />
+              </button>
+            </Tooltip>
           </div>
 
-          <div className="h-4 w-[1px] bg-emerald-950/60" />
+          <div className="hidden sm:block h-4 w-[1px] bg-emerald-950/60" />
 
-          {/* Serialization buttons */}
-          <div className="flex items-center gap-2">
+          {/* Serialization */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={handleImportClick}
               className="flex items-center gap-1.5 px-3 py-2 bg-[#030a05] hover:bg-[#06140b] border border-emerald-950 hover:border-emerald-900 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer focus:outline-none shadow-md"
               title="Import JSON Module Guide File"
             >
               <Upload className="h-3.5 w-3.5 text-[#d4af37]" />
-              <span>Import .JSON</span>
+              <span className="hidden xl:inline">Import .JSON</span>
             </button>
             <input
               ref={fileInputRef}
@@ -190,127 +330,145 @@ export default function App() {
             <button
               onClick={handleExport}
               className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#d4af37] to-[#10b981] hover:from-[#e5c158] hover:to-[#0d9f6e] border border-[#d4af37]/20 text-black rounded-xl text-xs font-extrabold shadow-lg shadow-emerald-950/20 hover:shadow-emerald-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer focus:outline-none"
-              title="Validate Schema and Export Module"
             >
               <Download className="h-3.5 w-3.5" />
               <span>Export Guide</span>
             </button>
           </div>
 
-          <div className="h-4 w-[1px] bg-emerald-950/60" />
+          <div className="hidden sm:block h-4 w-[1px] bg-emerald-950/60" />
 
-          {/* Onboarding Help Center */}
+          {/* Authentication */}
+          {!isAuthenticated ? (
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#030a05] hover:bg-[#06140b] border border-[#d4af37]/30 hover:border-[#d4af37]/60 text-[#d4af37] rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer focus:outline-none"
+            >
+              <span>Login</span>
+            </button>
+          ) : (
+            <button
+              onClick={async () => {
+                await signOut(auth);
+                setIsAuthenticated(false);
+                showToast('Logged out securely.', 'info');
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#030a05] hover:bg-rose-950/20 border border-emerald-950 hover:border-rose-900/50 text-slate-400 hover:text-rose-400 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer focus:outline-none"
+            >
+              <span>Logout</span>
+            </button>
+          )}
+
+          <div className="hidden lg:block h-4 w-[1px] bg-emerald-950/60" />
+
+          {/* Help */}
           <HelpSystem />
         </div>
-      </header>
+      </nav>
 
-      {/* 2. THREE-PANEL GRID splitscreen workspace */}
+      {/* Close dropdown on outside click */}
+      {activeDropdown && (
+        <div className="fixed inset-0 z-30" onClick={() => setActiveDropdown(null)} />
+      )}
+
+      {/* ═══ THREE-PANEL GRID WORKSPACE ═══ */}
       <main className="relative flex-grow flex w-full overflow-hidden z-10 print:overflow-visible print:h-auto">
-        {/* Panel A: Side select block palette */}
+        {/* Panel A: Block Palette */}
         <motion.section 
           initial={{ opacity: 0, x: -60 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 18 }}
-          className="w-72 bg-[#030a06]/35 border-r border-emerald-950/60 backdrop-blur-md flex-shrink-0 print:hidden"
+          className="hidden lg:block w-72 bg-[#030a06]/35 border-r border-emerald-950/60 backdrop-blur-md flex-shrink-0 overflow-y-auto print:hidden"
         >
           <BlockPalette />
         </motion.section>
 
-        {/* Panel B: Center visual visual editor canvas */}
+        {/* Panel B: Editor Canvas */}
         <motion.section 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 90, damping: 20, delay: 0.1 }}
-          className="flex-grow bg-[#020805]/20 overflow-y-auto print:hidden"
+          className="flex-grow min-w-0 bg-[#020805]/20 overflow-y-auto print:hidden"
         >
           <div className="max-w-3xl mx-auto py-6">
             <EditorCanvas />
           </div>
         </motion.section>
 
-        {/* Panel C: Isolated active Live Simulator Preview */}
+        {/* Panel C: Live Preview */}
         <motion.section 
           initial={{ opacity: 0, x: 60 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.2 }}
-          className="w-[500px] xl:w-[600px] border-l border-emerald-950 bg-[#030a06]/35 backdrop-blur-md flex-shrink-0 flex flex-col print:w-full print:border-none print:h-auto print:overflow-visible"
+          className="hidden md:flex w-[400px] lg:w-[500px] xl:w-[600px] border-l border-emerald-950 bg-[#030a06]/35 backdrop-blur-md flex-shrink-0 flex-col overflow-hidden print:w-full print:border-none print:h-auto print:overflow-visible print:flex"
         >
           <LivePreviewPanel />
         </motion.section>
       </main>
 
-      {/* Validation schema Error modal dialog overlay */}
-      {showValidationModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 select-none">
-          <div 
-            className="w-full max-w-lg bg-[#030a06] border border-emerald-900/30 shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[500px]"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="validation-modal-title"
+      {/* ═══ VALIDATION MODAL (using new Modal component) ═══ */}
+      <Modal
+        isOpen={showValidationModal}
+        onClose={() => setShowValidationModal(false)}
+        title="Module Schema Diagnostics Report"
+        footer={
+          <button
+            onClick={() => setShowValidationModal(false)}
+            className="px-4 py-2.5 bg-[#d4af37] hover:bg-[#e5c158] text-black font-extrabold text-xs rounded-xl shadow-lg hover:shadow-emerald-500/10 transition-all cursor-pointer focus:outline-none"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-emerald-950 bg-emerald-950/20">
-              <h3 id="validation-modal-title" className="font-extrabold text-sm text-slate-100 flex items-center gap-2.5 font-display">
-                <AlertCircle className="h-5 w-5 text-rose-500 animate-pulse" />
-                <span>Module Schema Diagnostics Report</span>
-              </h3>
-              <button
-                onClick={() => setShowValidationModal(false)}
-                className="text-slate-500 hover:text-slate-350 cursor-pointer focus:outline-none"
-                aria-label="Close report"
+            Acknowledge and Close
+          </button>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+            Found Errors and warnings details
+          </span>
+          <div className="flex flex-col gap-2.5">
+            {validationErrors.map((err, idx) => (
+              <div 
+                key={idx} 
+                className={`flex items-start gap-3 p-3.5 border rounded-2xl leading-normal select-text ${
+                  err.severity === 'Blocking' 
+                    ? 'border-rose-500/10 bg-rose-950/15 text-rose-200' 
+                    : 'border-amber-500/10 bg-amber-950/15 text-amber-200'
+                }`}
               >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* List */}
-            <div className="p-5 overflow-y-auto flex-grow flex flex-col gap-3">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
-                Found Errors and warnings details
-              </span>
-              <div className="flex flex-col gap-2.5">
-                {validationErrors.map((err, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`flex items-start gap-3 p-3.5 border rounded-2xl leading-normal select-text ${
-                      err.severity === 'Blocking' 
-                        ? 'border-rose-500/10 bg-rose-950/15 text-rose-200' 
-                        : 'border-amber-500/10 bg-amber-950/15 text-amber-200'
-                    }`}
-                  >
-                    <AlertCircle className="h-4.5 w-4.5 flex-shrink-0 mt-0.5" />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[9px] font-extrabold uppercase tracking-widest font-mono">
-                        {err.severity} Issue
-                      </span>
-                      <p className="text-xs text-slate-300 font-semibold leading-relaxed">
-                        {err.message}
-                      </p>
-                      {err.field && (
-                        <span className="text-[9px] font-mono text-slate-500 mt-1">
-                          Field: {err.field}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col gap-1">
+                  <span className="text-[9px] font-extrabold uppercase tracking-widest font-mono">
+                    {err.severity} Issue
+                  </span>
+                  <p className="text-xs text-slate-300 font-semibold leading-relaxed">
+                    {err.message}
+                  </p>
+                  {err.field && (
+                    <span className="text-[9px] font-mono text-slate-500 mt-1">
+                      Field: {err.field}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-
-            {/* Footer */}
-            <div className="px-5 py-4 border-t border-emerald-950 bg-[#020805]/95 flex justify-end select-none">
-              <button
-                onClick={() => setShowValidationModal(false)}
-                className="px-4 py-2.5 bg-[#d4af37] hover:bg-[#e5c158] text-black font-extrabold text-xs rounded-xl shadow-lg hover:shadow-emerald-500/10 transition-all cursor-pointer focus:outline-none"
-              >
-                Acknowledge and Close
-              </button>
-            </div>
+            ))}
           </div>
         </div>
-      )}
+      </Modal>
 
-      {/* Global animated toasts drawer */}
+      {/* Login Hub Modal */}
+      <AnimatePresence>
+        {showLoginModal && (
+          <LoginHub 
+            onSuccess={() => {
+              setIsAuthenticated(true);
+              setShowLoginModal(false);
+              showToast('Security Session Established Successfully.', 'success');
+            }} 
+            onClose={() => setShowLoginModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Global animated toasts */}
       <ToastContainer />
     </div>
   );

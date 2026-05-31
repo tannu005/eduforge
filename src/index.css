@@ -1,25 +1,107 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Midnight Emerald × Champagne Gold
+   Theme: Dark (default) + Light (toggle)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── CSS Custom Properties (Theme Variables) ─── */
 :root {
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-display: 'Outfit', sans-serif;
   --font-mono: 'Fira Code', monospace;
-  
+
+  /* Dark theme (default) */
+  --bg-color: #020805;
+  --bg-panel: rgba(3, 10, 6, 0.85);
+  --bg-card: rgba(4, 18, 8, 0.45);
+  --bg-input: rgba(3, 10, 6, 0.75);
+  --text-color: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --border-color: #082212;
+  --border-subtle: rgba(8, 34, 18, 0.4);
+  --gold: #d4af37;
+  --gold-hover: #e5c158;
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --surface-glow: rgba(212, 175, 55, 0.15);
+
   font-family: var(--font-sans);
   color-scheme: dark;
 }
 
+/* ─── Light Theme Override ─── */
+.theme-light {
+  --bg-color: #f8faf9;
+  --bg-panel: rgba(255, 255, 255, 0.9);
+  --bg-card: rgba(240, 248, 243, 0.7);
+  --bg-input: rgba(255, 255, 255, 0.85);
+  --text-color: #1a2e23;
+  --text-secondary: #3d5a47;
+  --text-muted: #6b8f78;
+  --border-color: #c5d8cc;
+  --border-subtle: rgba(197, 216, 204, 0.5);
+  --surface-glow: rgba(212, 175, 55, 0.1);
+  color-scheme: light;
+}
+
+.theme-light body,
+.theme-light {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.theme-light .glass-panel {
+  background: var(--bg-panel);
+  border-color: var(--border-color);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.theme-light .glass-card {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+}
+
+.theme-light .glass-card:hover {
+  background: rgba(220, 240, 228, 0.8);
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06), 0 0 20px rgba(212, 175, 55, 0.05);
+}
+
+.theme-light input[type="number"],
+.theme-light select,
+.theme-light textarea,
+.theme-light input[type="text"] {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color);
+}
+
+.theme-light input[type="range"] {
+  background: rgba(200, 220, 210, 0.5);
+  border-color: var(--border-subtle);
+}
+
+/* ─── Body ─── */
 body {
   margin: 0;
   padding: 0;
-  background-color: #020805; /* Deep obsidian forest green */
-  color: #f1f5f9;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  /* Hide default cursor for custom cursor trail effect */
+  cursor: none;
 }
 
-/* Custom Recruiting-Grade Scrollbars */
+/* Restore cursor for interactive elements */
+a, button, input, textarea, select, [role="button"], label {
+  cursor: none;
+}
+
+/* ─── Custom Recruiting-Grade Scrollbars ─── */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -39,18 +121,26 @@ body {
   background: linear-gradient(135deg, #10b981, #d4af37);
 }
 
-/* Elite Glassmorphism System */
+/* ═══════════════════════════════════════════════════════════════
+   GLASSMORPHISM SYSTEM — Enhanced with deeper blur
+   ═══════════════════════════════════════════════════════════════ */
+
 .glass-panel {
-  background: rgba(3, 10, 6, 0.85);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.03);
+  background: var(--bg-panel);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  border: 1px solid var(--surface-glow);
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.8), 
+    inset 0 1px 1px rgba(255, 255, 255, 0.03),
+    0 0 40px rgba(212, 175, 55, 0.03);
 }
 
 .glass-card {
-  background: rgba(4, 15, 8, 0.45);
+  background: var(--bg-card);
   border: 1px solid rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -61,7 +151,31 @@ body {
   transform: translateY(-3px) scale(1.015);
 }
 
-/* Selected block with pulsing gold & emerald border & backglow */
+/* Deep glassmorphism for calculator and quiz cards */
+.glass-deep {
+  background: rgba(3, 10, 6, 0.55);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    0 0 60px rgba(16, 185, 129, 0.02);
+  transition: all 0.3s ease;
+}
+
+.glass-deep:hover {
+  border-color: rgba(212, 175, 55, 0.22);
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 0 80px rgba(212, 175, 55, 0.04);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SELECTED BLOCK GLOW SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+
 .glow-border-selected {
   position: relative;
   border: 2px solid transparent !important;
@@ -104,12 +218,15 @@ body {
   }
 }
 
-/* Glowing Form Fields */
+/* ═══════════════════════════════════════════════════════════════
+   FORM FIELDS — Glowing Inputs
+   ═══════════════════════════════════════════════════════════════ */
+
 input[type="number"], select, textarea, input[type="text"] {
-  background: rgba(3, 10, 6, 0.75) !important;
+  background: var(--bg-input) !important;
   border: 1px solid rgba(212, 175, 55, 0.18) !important;
   border-radius: 12px;
-  color: #f8fafc;
+  color: var(--text-color);
   padding: 0.5rem 0.75rem;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none !important;
@@ -121,7 +238,10 @@ input[type="number"]:focus, select:focus, textarea:focus, input[type="text"]:foc
   background: rgba(4, 15, 8, 0.9) !important;
 }
 
-/* Custom High-Tech Range Sliders */
+/* ═══════════════════════════════════════════════════════════════
+   HIGH-TECH RANGE SLIDERS
+   ═══════════════════════════════════════════════════════════════ */
+
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -139,7 +259,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  cursor: pointer;
+  cursor: none;
   border: 2px solid #020805;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -170,7 +290,10 @@ input[type="range"]::-webkit-slider-thumb:active {
   transform: scale(1.5);
 }
 
-/* TipTap Editor Customizations */
+/* ═══════════════════════════════════════════════════════════════
+   TIPTAP EDITOR (Rich Text)
+   ═══════════════════════════════════════════════════════════════ */
+
 .ProseMirror {
   outline: none;
   min-height: 120px;
@@ -223,7 +346,10 @@ input[type="range"]::-webkit-slider-thumb:active {
   color: #e5c158;
 }
 
-/* Premium Device Simulator Mockup Framework */
+/* ═══════════════════════════════════════════════════════════════
+   DEVICE SIMULATOR MOCKUP
+   ═══════════════════════════════════════════════════════════════ */
+
 .mock-device-bezel {
   background: #020805;
   border: 12px solid #0d1f14;
@@ -240,4 +366,180 @@ input[type="range"]::-webkit-slider-thumb:active {
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOVER MICRO-ANIMATIONS — Block Cards & Interactive Elements
+   ═══════════════════════════════════════════════════════════════ */
+
+.block-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.block-card-hover:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(212, 175, 55, 0.08);
+}
+
+.block-card-hover:active {
+  transform: translateY(-1px) scale(0.99);
+  transition: all 0.1s ease;
+}
+
+/* Palette card enhanced hover */
+.palette-card {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.palette-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0) 0%, rgba(212, 175, 55, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.palette-card:hover::before {
+  opacity: 1;
+}
+
+.palette-card:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  box-shadow: 
+    0 12px 30px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(212, 175, 55, 0.06);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATED PROGRESS BAR — Bootstrap-style striped + animated
+   ═══════════════════════════════════════════════════════════════ */
+
+.progress-bar-container {
+  background: rgba(3, 10, 6, 0.8);
+  border-radius: 9999px;
+  overflow: hidden;
+  height: 12px;
+  border: 1px solid rgba(8, 34, 18, 0.4);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #d4af37, #10b981, #d4af37);
+  background-size: 200% 100%;
+  animation: progress-shimmer 2s ease infinite;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 8px,
+    rgba(255, 255, 255, 0.08) 8px,
+    rgba(255, 255, 255, 0.08) 16px
+  );
+  animation: progress-stripes 0.8s linear infinite;
+}
+
+@keyframes progress-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes progress-stripes {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(16px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GSAP SCROLL TRIGGER ANIMATION HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+
+.gsap-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.gsap-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEXT REVEAL ANIMATION (Splitting.js-inspired, pure CSS)
+   ═══════════════════════════════════════════════════════════════ */
+
+.text-reveal-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: textRevealUp 0.5s ease forwards;
+}
+
+@keyframes textRevealUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger delay classes for word-by-word reveal */
+.text-reveal-word:nth-child(1) { animation-delay: 0.05s; }
+.text-reveal-word:nth-child(2) { animation-delay: 0.1s; }
+.text-reveal-word:nth-child(3) { animation-delay: 0.15s; }
+.text-reveal-word:nth-child(4) { animation-delay: 0.2s; }
+.text-reveal-word:nth-child(5) { animation-delay: 0.25s; }
+.text-reveal-word:nth-child(6) { animation-delay: 0.3s; }
+.text-reveal-word:nth-child(7) { animation-delay: 0.35s; }
+.text-reveal-word:nth-child(8) { animation-delay: 0.4s; }
+.text-reveal-word:nth-child(9) { animation-delay: 0.45s; }
+.text-reveal-word:nth-child(10) { animation-delay: 0.5s; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOOLTIP FADE-IN ANIMATION
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVBAR DROPDOWN ANIMATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.dropdown-enter {
+  animation: dropdownSlide 0.2s ease-out forwards;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHART.JS CANVAS OVERRIDES
+   ═══════════════════════════════════════════════════════════════ */
+
+canvas {
+  max-width: 100%;
 }

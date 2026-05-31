@@ -7,6 +7,10 @@ import {
 } from '../../utils/financial';
 import { Landmark, TrendingUp, Download, PieChart, Table } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from 'chart.js';
+
+ChartJS.register(ArcElement, ChartTooltip, Legend);
 
 interface SipCalculatorProps {
   id: string;
@@ -78,9 +82,7 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
   const investedPercent = (totalInvested / totalWeight) * 100;
   const wealthPercent = (wealthGained / totalWeight) * 100;
 
-  const radius = 60;
-  const circumference = 2 * Math.PI * radius;
-  const strokeOffset = circumference - (wealthPercent / 100) * circumference;
+
 
   const sipSliderClass = "w-full h-1.5 bg-emerald-950 rounded-lg appearance-none cursor-pointer accent-emerald-500 focus:outline-none";
 
@@ -90,7 +92,7 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
       role="region"
       aria-label="SIP Calculator Widget"
     >
-      <div className="flex items-center justify-between border-b border-emerald-950 pb-3 select-none">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-3 select-none">
         <div className="flex items-center gap-2.5 text-slate-300">
           <TrendingUp className="h-5 w-5 text-[#d4af37]" />
           <h3 className="font-bold text-base font-display">
@@ -104,7 +106,7 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
         <div className="lg:col-span-6 flex flex-col gap-5">
           {/* Monthly Investment */}
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center select-none">
+            <div className="flex flex-wrap justify-between items-center gap-2 select-none">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Monthly Investment
               </label>
@@ -139,7 +141,7 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
 
           {/* Expected Return */}
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center select-none">
+            <div className="flex flex-wrap justify-between items-center gap-2 select-none">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Expected Return (Annual)
               </label>
@@ -175,7 +177,7 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
 
           {/* Duration */}
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center select-none">
+            <div className="flex flex-wrap justify-between items-center gap-2 select-none">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Duration (Years)
               </label>
@@ -239,39 +241,52 @@ export const SipCalculator: React.FC<SipCalculatorProps> = ({
             </div>
           </div>
 
-          {/* SVG Doughnut chart */}
+          {/* Chart.js Doughnut chart */}
           <div className="w-full sm:w-1/2 flex items-center justify-center relative select-none">
-            <svg className="w-36 h-36" viewBox="0 0 150 150">
-              <circle
-                cx="75"
-                cy="75"
-                r={radius}
-                className="stroke-emerald-950/60 fill-none"
-                strokeWidth="16"
+            <div className="w-36 h-36 relative">
+              <Doughnut
+                data={{
+                  labels: ['Invested', 'Wealth Gained'],
+                  datasets: [{
+                    data: [totalInvested, wealthGained],
+                    backgroundColor: ['#10b981', '#d4af37'],
+                    borderColor: ['#082212', '#082212'],
+                    borderWidth: 2,
+                    hoverBackgroundColor: ['#0d9f6e', '#e5c158'],
+                    hoverBorderColor: ['#d4af37', '#10b981'],
+                  }],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  cutout: '65%',
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      backgroundColor: '#020805',
+                      titleColor: '#d4af37',
+                      bodyColor: '#f1f5f9',
+                      borderColor: '#082212',
+                      borderWidth: 1,
+                      cornerRadius: 12,
+                      padding: 10,
+                      callbacks: {
+                        label: (ctx: any) => ` ₹${formatIndianNumber(ctx.raw)}`,
+                      },
+                    },
+                  },
+                  animation: {
+                    animateRotate: true,
+                    duration: 600,
+                  },
+                }}
               />
-              <motion.circle
-                cx="75"
-                cy="75"
-                r={radius}
-                className="stroke-[#d4af37] fill-none"
-                strokeWidth="16"
-                strokeLinecap="round"
-                initial={{ strokeDasharray: circumference, strokeDashoffset: circumference }}
-                animate={{ strokeDashoffset: strokeOffset }}
-                transition={{ type: "spring", stiffness: 70, damping: 15 }}
-                transform="rotate(-90 75 75)"
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-[10px] font-bold text-slate-500 uppercase">Wealth</span>
-              <motion.span 
-                key={wealthPercent}
-                initial={{ scale: 0.85, opacity: 0.7 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="text-base font-extrabold text-[#d4af37] font-mono"
-              >
-                {wealthPercent.toFixed(0)}%
-              </motion.span>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">Returns</span>
+                <span className="text-base font-extrabold text-[#d4af37] font-mono">
+                  {wealthPercent.toFixed(0)}%
+                </span>
+              </div>
             </div>
           </div>
         </div>

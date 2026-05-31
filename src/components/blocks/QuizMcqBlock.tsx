@@ -107,7 +107,7 @@ export const QuizMcqBlock: React.FC<QuizMcqBlockProps> = ({
         role="group"
         aria-label="Multiple Choice Quiz Block"
       >
-        <div className="flex items-center justify-between border-b border-emerald-950 pb-2.5 select-none">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-2.5 select-none">
           <div className="flex items-center gap-2 text-slate-300">
             <HelpCircle className="h-4 w-4 text-[#d4af37]" />
             <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
@@ -229,7 +229,7 @@ export const QuizMcqBlock: React.FC<QuizMcqBlockProps> = ({
 
   return (
     <div className={`flex flex-col gap-4 p-4 border border-emerald-950 bg-[#041208]/20 rounded-xl select-none ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4 border-b border-emerald-950 pb-2.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-2.5">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
           <HelpCircle className="h-4 w-4 text-[#d4af37]" />
           <span>Multiple Choice Quiz (MCQ) Settings</span>

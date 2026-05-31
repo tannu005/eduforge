@@ -79,15 +79,15 @@ export const ImageBlock: React.FC<ImageBlockProps> = ({
 
   return (
     <div className={`flex flex-col gap-4 p-4 border border-[#082212]/80 bg-[#030a06]/30 rounded-xl select-none ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 whitespace-nowrap">
           <Image className="h-4 w-4 text-[#d4af37]" />
           <span>Image Block Settings</span>
         </div>
         
         {/* Alignment Toggles */}
         {!isLocked && (
-          <div className="flex items-center gap-1.5 bg-[#030e07] border border-emerald-950/50 p-0.5 rounded-lg">
+          <div className="flex flex-wrap items-center gap-1.5 bg-[#030e07] border border-emerald-950/50 p-0.5 rounded-lg">
             {alignments.map((align) => {
               const AlignIcon = align.icon;
               return (

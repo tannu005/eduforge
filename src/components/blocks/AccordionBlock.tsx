@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { AccordionContent, AccordionItem } from '../../types';
 import { useModuleStore } from '../../store/useModuleStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, Plus, Trash2, HelpCircle } from 'lucide-react';
+import gsap from 'gsap';
 
 interface AccordionBlockProps {
   id: string;
@@ -74,7 +75,7 @@ export const AccordionBlock: React.FC<AccordionBlockProps> = ({
           return (
             <div 
               key={idx} 
-              className="border border-[#082212]/80 bg-[#030a06]/10 rounded-xl overflow-hidden shadow-sm"
+              className="border border-[#082212]/80 bg-[#030a06]/10 rounded-xl overflow-hidden shadow-sm glass-deep"
             >
               <button
                 id={`accordion-header-${id}-${idx}`}
@@ -97,7 +98,7 @@ export const AccordionBlock: React.FC<AccordionBlockProps> = ({
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1.0] }}
                     className="overflow-hidden border-t border-[#04140a]"
                     role="region"
                     aria-labelledby={`accordion-header-${id}-${idx}`}
@@ -117,7 +118,7 @@ export const AccordionBlock: React.FC<AccordionBlockProps> = ({
 
   return (
     <div className={`flex flex-col gap-4 p-4 border border-[#082212]/80 bg-[#030a06]/30 rounded-xl select-none ${isLocked ? 'opacity-80' : ''}`}>
-      <div className="flex items-center justify-between gap-4 border-b border-[#04140a] pb-2.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#04140a] pb-2.5">
         <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
           <HelpCircle className="h-4 w-4 text-[#d4af37]" />
           <span>Accordion / FAQ Settings</span>
